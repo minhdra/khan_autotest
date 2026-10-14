@@ -15,7 +15,7 @@ và báo cáo HTML/Excel/CSV/JSON.
 ## Chạy nhanh
 **Docker:** `docker compose up -d --build` → mở http://localhost:8765
 **Thường:** `uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt && .venv/bin/python -m app`
-(cần Firefox + geckodriver). Chi tiết ở [docs/INSTALL.md](docs/INSTALL.md).
+(cần Firefox + geckodriver). **Windows PowerShell:** xem [mục 2b](docs/INSTALL.md) (không dùng `&&`, venv ở `.venv\Scripts\`). Chi tiết ở [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Lưu ý production
 Đây là website thật của bên thứ ba: chạy tuần tự, nghỉ giữa các test (mặc định 2s), chỉ đọc / đăng nhập thử,

@@ -58,6 +58,29 @@ Biến môi trường (đều tùy chọn):
 
 Chạy ở chế độ "Hiện cửa sổ" (không headless) cần có màn hình thật hoặc Xvfb.
 
+## 2b. Windows (PowerShell)
+PowerShell 5 **không hỗ trợ `&&`** — chạy từng dòng riêng; venv nằm ở `.venv\Scripts\`, không phải `.venv/bin/`.
+
+**Yêu cầu:** Python ≥ 3.10 (tick "Add to PATH"), Firefox. geckodriver tự tải bởi Selenium Manager (cần Internet).
+
+```powershell
+cd khan_autotest
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+# nếu có uv:  uv venv .venv ; uv pip install --python .venv\Scripts\python.exe -r requirements.txt
+
+.\.venv\Scripts\python.exe -m app                      # GUI: http://127.0.0.1:8765
+.\.venv\Scripts\python.exe -m app.cli testcases\khan_full.csv --ids LG01,LG26 --no-headless --delay 3
+```
+Nếu `Activate.ps1` bị chặn: `Set-ExecutionPolicy -Scope Process Bypass` (hoặc không cần activate, gọi thẳng `python.exe` như trên).
+Biến môi trường (pytest) trong PowerShell:
+```powershell
+$env:KHAN_HEADLESS = "0"; $env:KHAN_DELAY = "3"
+.\.venv\Scripts\python.exe -m pytest tests\test_login.py -k "LG01 or LG26" -v
+```
+Trên Windows chế độ hiện cửa sổ (`--no-headless`) dùng được trực tiếp vì có màn hình thật; không cần Xvfb/noVNC.
+Bản Docker dùng Docker Desktop: lệnh `docker compose ...` giống Linux, chỉ khác cú pháp nối lệnh (dùng `;` thay `&&`).
+
 ## Cài thêm để chạy pytest (tùy chọn)
 ```bash
 uv pip install --python .venv/bin/python -r requirements-dev.txt

@@ -9,6 +9,8 @@ Không cần chạy `python -m app` hay mở trình duyệt vào GUI. Có hai c�
 
 Kết quả in ra terminal từng dòng; exit code `0` = không có FAIL/ERROR, `1` = có lỗi (dùng được cho CI).
 
+> **Windows PowerShell:** thay `.venv/bin/python` bằng `.\.venv\Scripts\python.exe`, `\` cuối dòng bằng backtick, biến môi trường dạng `$env:KHAN_HEADLESS="0"`. Xem [INSTALL.md mục 2b](INSTALL.md).
+
 ## 1. Máy thường (đã cài theo [INSTALL.md](INSTALL.md))
 ```bash
 cd khan_autotest
