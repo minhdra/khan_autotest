@@ -1,0 +1,28 @@
+id,module,title,priority,scenario,input1,input2,expected_mode,expected,note,enabled
+LG01,Đăng nhập,Mở trang đăng nhập hiển thị đủ form,High,open_page,/login,,element_visible,#username-field,Form có ô email/tên đăng nhập,1
+LG02,Đăng nhập,Email không tồn tại + mật khẩu hợp lệ,High,login,khong.ton.tai.autotest.9271@example.com,Abcd@1234,text_contains,không đúng|incorrect,Báo lỗi thông tin sai,1
+LG03,Đăng nhập,Để trống email và mật khẩu,High,login,,,url_contains,/login,Ở lại trang login,1
+LG04,Đăng nhập,Để trống mật khẩu,Medium,login,autotest.user@example.com,,url_contains,/login,Ở lại trang login,1
+LG05,Đăng nhập,Để trống email,Medium,login,,Abcd@1234,url_contains,/login,Ở lại trang login,1
+LG06,Đăng nhập,Email thiếu ký tự @,Medium,login,autotest.userexample.com,Abcd@1234,url_contains,/login,Ở lại trang login,1
+LG07,Đăng nhập,Email thiếu phần @gmail.com,Medium,login,autotest.user,Abcd@1234,url_contains,/login,Ở lại trang login,1
+LG08,Đăng nhập,Mật khẩu 7 ký tự (dưới biên 8),Medium,login,autotest.user@example.com,Ab@1234,url_contains,/login,Ở lại trang login,1
+LG09,Đăng nhập,Mật khẩu chỉ gồm số,Low,login,autotest.user@example.com,12345678,url_contains,/login,Ở lại trang login,1
+LG10,Đăng nhập,Đăng nhập đúng tài khoản thật,High,login,{EMAIL},{PASSWORD},url_not_contains,/login,Cần nhập tài khoản ở phần Cài đặt,1
+SR01,Tìm kiếm,Tìm theo tên khóa học hợp lệ (algebra),High,search,algebra,,results_min,1,Có ít nhất 1 kết quả,1
+SR02,Tìm kiếm,Tìm theo từ tiếng Việt (toán),High,search,toán,,results_min,1,Có kết quả,1
+SR03,Tìm kiếm,Tìm bằng một chữ cái,Medium,search,a,,text_contains,Tất cả kết quả,Hiện danh sách hoặc không khớp,1
+SR04,Tìm kiếm,Tìm bằng số,Medium,search,2024,,text_contains,Tất cả kết quả,Trang kết quả hiển thị,1
+SR05,Tìm kiếm,Tìm bằng ký tự đặc biệt,Medium,search,@#$%,,text_contains,Tất cả kết quả,Trang kết quả hiển thị,1
+SR06,Tìm kiếm,Từ khóa không tồn tại,High,search,zzqqxxwwvv9,,text_contains,không khớp|did not match,Báo không có kết quả,1
+SR07,Tìm kiếm,Từ khóa rất dài (200 ký tự),Low,search,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,,text_contains,Tất cả kết quả,Không treo trang,1
+SR08,Tìm kiếm,Tìm theo kiểu nội dung (video),Low,search,video,,results_min,1,Có kết quả,1
+SR09,Tìm kiếm,Không nhập từ khóa,Medium,search,,,url_contains,/search,Ở lại trang tìm kiếm,1
+SR10,Tìm kiếm,Tìm có chứa dấu cách đầu/cuối,Low,search,  algebra  ,,results_min,1,Có kết quả,1
+NV01,Điều hướng,Trang chủ tải được,High,open_page,/,,title_contains,Khan Academy,,1
+NV02,Điều hướng,Trang Toán học tải được,Medium,open_page,/math,,url_contains,/math,,1
+NV03,Điều hướng,Trang Khoa học tải được,Medium,open_page,/science,,url_contains,/science,,1
+NV04,Điều hướng,Trang Lập trình/Máy tính tải được,Medium,open_page,/computing,,url_contains,/computing,,1
+NV05,Điều hướng,Trang không tồn tại trả về 404,Low,open_page,/trang-khong-ton-tai-autotest,,text_contains,không tồn tại|not found|404,,1
+CR01,Khóa học,Mở trang Courses sau đăng nhập,High,login_then_open,/profile/me/courses,,url_contains,/profile/me/courses,Cần tài khoản; chỉ đọc,1
+CR02,Tiến độ,Mở trang Progress sau đăng nhập,High,login_then_open,/profile/me/progress,,url_contains,/profile/me/progress,Cần tài khoản; chỉ đọc,1

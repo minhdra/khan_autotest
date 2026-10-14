@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khan Academy AutoTest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/theme.css">
+<style>
+.wrap{max-width:1320px;margin:0 auto;padding:18px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.side{position:sticky;top:64px;display:grid;gap:18px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}.side{position:static}}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;padding:12px 16px;border-bottom:1px solid var(--line)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:3px 11px;font-size:12.5px}
+.chip[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.tc-scroll{max-height:460px;overflow:auto}
+.sel-info{font-size:12.5px;color:var(--muted)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-grid .full{grid-column:1/-1}
+.run-row{display:flex;gap:8px;margin-top:14px}.run-row .btn{flex:1;justify-content:center}
+.hint{font-size:12px;color:var(--muted);margin:10px 0 0}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.cur{font-size:12.5px;color:var(--muted);margin:8px 0 0;min-height:1.5em}
+.detail td{background:var(--surface-2);font-size:12.5px}
+.detail dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:0}
+.detail dt{color:var(--muted)}.detail dd{margin:0;word-break:break-word}
+.row-btn{background:none;border:0;color:var(--accent);padding:0;font-weight:600}
+.empty{padding:28px 16px;color:var(--muted);text-align:center}
+.live-link{font-size:12.5px}
+td.id{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.in{font-family:var(--mono);font-size:12px;color:var(--muted);word-break:break-all}
+</style></head><body>
+<header class="top"><div class="top-in">
+  <div class="brand"><span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></span>
+    Khan Academy AutoTest <small>Selenium · Python · POM</small></div>
+  <span class="spacer"></span>
+  <a id="vnc" class="live-link" hidden target="_blank" rel="noopener">Xem trình duyệt trực tiếp ↗</a>
+  <div class="seg" role="group" aria-label="Giao diện"><button data-th="system">Tự động</button><button data-th="light">Sáng</button><button data-th="dark">Tối</button></div>
+</div></header>
+
+<main class="wrap">
+ <div class="grid">
+  <section class="card" aria-labelledby="h-tc">
+    <div class="card-h"><h2 id="h-tc">Bộ test case</h2><span class="sel-info" id="selinfo"></span></div>
+    <div class="toolbar">
+      <label class="f">File test case<select id="file"></select></label>
+      <label class="f">Tải lên (.csv .xlsx .json)<input type="file" id="up" accept=".csv,.xlsx,.json"></label>
+      <label class="f" style="flex:1;min-width:160px">Tìm trong bộ test<input type="search" id="q" placeholder="ID, mô tả, dữ liệu…"></label>
+      <a href="/api/template" download class="btn ghost">File mẫu</a>
+    </div>
+    <div class="chips" id="chips" aria-label="Bộ lọc"></div>
+    <div class="tc-scroll tbl-wrap"><table><thead><tr>
+      <th style="width:34px"><input type="checkbox" id="all" aria-label="Chọn tất cả đang hiển thị"></th>
+      <th>ID</th><th>Mô tả</th><th>Loại</th><th>Ưu tiên</th><th>Kịch bản</th><th>Dữ liệu vào</th><th>Kỳ vọng</th></tr></thead>
+      <tbody id="tcbody"></tbody></table></div>
+    <div class="card-b"><details><summary>Quy ước cột và kịch bản</summary><div id="legend" class="muted" style="margin-top:8px"></div></details></div>
+  </section>
+
+  <aside class="side">
+    <section class="card" aria-labelledby="h-run">
+      <div class="card-h"><h2 id="h-run">Chạy kiểm thử</h2></div>
+      <div class="card-b">
+        <div class="field-grid">
+          <label class="f full">Website<input type="text" id="base_url"></label>
+          <label class="f">Nghỉ giữa test (s)<input type="number" id="delay" min="0" step="0.5"></label>
+          <label class="f">Timeout (s)<input type="number" id="timeout" min="3"></label>
+          <label class="f">Chạy lại khi ERROR<input type="number" id="retries" min="0" max="3"></label>
+          <label class="f">Trình duyệt<select id="headless"><option value="1">Ẩn (headless)</option><option value="0">Hiện cửa sổ</option></select></label>
+          <label class="f full">Email tài khoản (tuỳ chọn)<input type="text" id="email" autocomplete="off"></label>
+          <label class="f full">Mật khẩu<input type="password" id="password" autocomplete="off"></label>
+        </div>
+        <p class="hint">Tài khoản chỉ dùng cho test có <code>{EMAIL}</code>/<code>{PASSWORD}</code> và <code>login_then_open</code>, không được lưu. Website là production của bên thứ ba: chạy tuần tự, chỉ đọc, không tạo tải.</p>
+        <div class="run-row"><button class="btn" id="run">▶ Chạy</button><button class="btn danger" id="stop" disabled>■ Dừng</button></div>
+        <div class="progress"><div id="prog"></div></div>
+        <p class="cur" id="cur">Chưa chạy.</p>
+      </div>
+    </section>
+  </aside>
+ </div>
+
+ <section class="card" id="resCard" aria-labelledby="h-res">
+   <div class="card-h"><h2 id="h-res">Kết quả</h2><span class="spacer"></span><span id="dl"></span></div>
+   <div class="card-b" id="resBody"><div class="empty">Chọn test case rồi bấm Chạy. Kết quả hiện ở đây theo thời gian thực.</div></div>
+ </section>
+
+ <section class="card" aria-labelledby="h-hist">
+   <div class="card-h"><h2 id="h-hist">Lịch sử các lần chạy</h2></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Thời gian</th><th>Bộ test</th><th class="num">Tổng</th><th class="num">PASS</th><th class="num">FAIL</th><th class="num">ERROR</th><th class="num">SKIP</th><th>Tỷ lệ PASS</th><th>Báo cáo</th></tr></thead><tbody id="hist"></tbody></table></div>
+ </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ICON={PASS:'✓',FAIL:'✕',ERROR:'!',SKIPPED:'–'};
+/* theme */
+function setTheme(t){try{localStorage.setItem('khan-theme',t)}catch(e){}
+  if(t==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.dataset.theme=t;
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.th===t))}
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setTheme(b.dataset.th));
+let saved='system';try{saved=localStorage.getItem('khan-theme')||'system'}catch(e){} setTheme(saved);
+
+async function api(p,o){const r=await fetch(p,o);const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||r.statusText);return j}
+let TCS=[],SEL=new Set(),FILTER={module:null,priority:null,type:null},Q='';
+
+async function init(){
+  const j=await api('/api/files');
+  $('#file').innerHTML=j.files.map(f=>`<option>${esc(f)}</option>`).join('');
+  const pref=j.files.find(f=>f.startsWith('khan_full'));if(pref)$('#file').value=pref;
+  const d=j.defaults;$('#base_url').value=d.base_url;$('#delay').value=d.delay;$('#timeout').value=d.timeout;$('#retries').value=d.retries;
+  $('#legend').innerHTML='<b>Kịch bản (scenario)</b><ul>'+Object.entries(j.scenarios).map(([k,v])=>`<li><code>${k}</code> – ${esc(v)}</li>`).join('')+
+   '</ul><b>Cách kiểm tra (expected_mode)</b><ul>'+Object.entries(j.modes).map(([k,v])=>`<li><code>${k}</code> – ${esc(v)}</li>`).join('')+
+   '</ul>Cột: <code>id, module, title, type, priority, scenario, input1, input2, expected_mode, expected, note, enabled</code>';
+  if(j.vnc){const a=$('#vnc');a.href=(location.hostname==='localhost'||/^[\d.]+$/.test(location.hostname)?location.protocol+'//'+location.hostname+':'+j.vnc+'/vnc.html?autoconnect=1&resize=scale':'/vnc/vnc.html?autoconnect=1&resize=scale&path=vnc/websockify');a.hidden=false}
+  await loadTC();loadHist();poll();
+}
+async function loadTC(){
+  const f=$('#file').value;if(!f)return;
+  try{const j=await api('/api/testcases?file='+encodeURIComponent(f));TCS=j.testcases;
+    if(j.errors.length)alert('Lỗi trong file: '+j.errors.slice(0,5).join('; '));}catch(e){TCS=[];alert(e.message)}
+  SEL=new Set(TCS.filter(t=>t.enabled).map(t=>t.id));FILTER={module:null,priority:null,type:null};
+  renderChips();renderTC();
+}
+function visible(){const q=Q.toLowerCase();
+  return TCS.filter(t=>(!FILTER.module||t.module===FILTER.module)&&(!FILTER.priority||t.priority===FILTER.priority)&&(!FILTER.type||t.type===FILTER.type)&&
+   (!q||[t.id,t.title,t.input1,t.input2,t.expected,t.module].join(' ').toLowerCase().includes(q)))}
+function renderChips(){
+  const uniq=k=>[...new Set(TCS.map(t=>t[k]).filter(Boolean))];
+  const grp=(k,label)=>uniq(k).map(v=>`<button class="chip" data-k="${k}" data-v="${esc(v)}" aria-pressed="${FILTER[k]===v}">${esc(v)}</button>`).join('');
+  $('#chips').innerHTML=grp('module')+'<span class="muted">|</span>'+grp('priority')+'<span class="muted">|</span>'+grp('type');
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const k=c.dataset.k,v=c.dataset.v;FILTER[k]=FILTER[k]===v?null:v;renderChips();renderTC()});
+}
+function renderTC(){
+  const v=visible();
+  $('#tcbody').innerHTML=v.map(t=>`<tr><td><input type="checkbox" class="sel" data-id="${esc(t.id)}" ${SEL.has(t.id)?'checked':''} aria-label="Chọn ${esc(t.id)}"></td>
+    <td class="id">${esc(t.id)}</td><td>${esc(t.title)}<div class="muted" style="font-size:12px">${esc(t.module)}</div></td>
+    <td><span class="tag">${esc(t.type)}</span></td><td><span class="pri ${esc(t.priority)}">${esc(t.priority)}</span></td>
+    <td><code>${esc(t.scenario)}</code></td><td class="in">${esc((t.input1||'').slice(0,48))}${t.input2?' / '+esc(t.input2.startsWith('{')?t.input2:'•••'):''}</td>
+    <td class="in">${esc(t.expected_mode)}: ${esc((t.expected||'').slice(0,40))}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">Không có test case khớp bộ lọc.</td></tr>';
+  document.querySelectorAll('.sel').forEach(c=>c.onchange=()=>{c.checked?SEL.add(c.dataset.id):SEL.delete(c.dataset.id);info()});
+  $('#all').checked=v.length>0&&v.every(t=>SEL.has(t.id));info();
+}
+function info(){$('#selinfo').textContent=`${SEL.size}/${TCS.length} test case được chọn`}
+$('#all').onchange=e=>{visible().forEach(t=>e.target.checked?SEL.add(t.id):SEL.delete(t.id));renderTC()};
+$('#q').oninput=e=>{Q=e.target.value;renderTC()};
+$('#file').onchange=loadTC;
+$('#up').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  try{const j=await api('/api/upload?name='+encodeURIComponent(f.name),{method:'POST',body:await f.arrayBuffer()});
+    if(![...$('#file').options].some(x=>x.text===j.name)){const o=document.createElement('option');o.textContent=j.name;$('#file').add(o)}
+    $('#file').value=j.name;await loadTC();}catch(x){alert(x.message)}};
+
+$('#run').onclick=async()=>{
+  if(!SEL.size)return alert('Chưa chọn test case nào');
+  const s={base_url:$('#base_url').value,delay:+$('#delay').value,timeout:+$('#timeout').value,retries:+$('#retries').value,
+    headless:$('#headless').value==='1',email:$('#email').value,password:$('#password').value};
+  try{await api('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({file:$('#file').value,ids:[...SEL],settings:s})});
+    OPEN.clear();poll();$('#resCard').scrollIntoView({behavior:'smooth'})}catch(e){alert(e.message)}};
+$('#stop').onclick=()=>api('/api/stop',{method:'POST'});
+
+let timer=null,FSTAT=null;const OPEN=new Set();
+const STAT_VN={finished:'Hoàn tất',stopped:'Đã dừng',error:'Lỗi'};
+async function poll(){
+  clearTimeout(timer);
+  let st;try{st=await api('/api/status')}catch(e){timer=setTimeout(poll,3000);return}
+  const running=st.status==='running';
+  $('#run').disabled=running;$('#stop').disabled=!running;
+  $('#prog').style.width=(st.total?100*st.done/st.total:0)+'%';
+  $('#cur').textContent=running?`Đang chạy ${st.done}/${st.total}: ${st.current||''}`:(st.run_id?`${STAT_VN[st.status]||st.status}${st.message?': '+st.message:''} · ${st.done}/${st.total}`:'Chưa chạy.');
+  if(st.run_id)renderResults(st,running);
+  if(running)timer=setTimeout(poll,1500);else if(st.run_id)loadHist();
+}
+function summary(rs){const c={PASS:0,FAIL:0,ERROR:0,SKIPPED:0};rs.forEach(r=>c[r.status]++);const ex=rs.length-c.SKIPPED;return{...c,ex,rate:ex?100*c.PASS/ex:0}}
+function distBar(c,total){return `<div class="dist" role="img" aria-label="PASS ${c.PASS}, FAIL ${c.FAIL}, ERROR ${c.ERROR}, SKIPPED ${c.SKIPPED}">`+
+  ['PASS','FAIL','ERROR','SKIPPED'].map(k=>c[k]?`<i class="${k}" style="flex:${c[k]}" title="${k}: ${c[k]}"></i>`:'').join('')+'</div>'}
+function renderResults(st,running){
+  const rs=st.results,s=summary(rs),total=st.total||rs.length;
+  const mods={};rs.forEach(r=>{const m=mods[r.module||'-']??={PASS:0,FAIL:0,ERROR:0,SKIPPED:0,n:0};m[r.status]++;m.n++});
+  const flt=FSTAT;
+  const rows=rs.filter(r=>!flt||r.status===flt).map(r=>{
+    const o=OPEN.has(r.id),shot=r.screenshot?`/runs/${st.run_id}/${r.screenshot}`:'';
+    return `<tr><td class="id">${esc(r.id)}</td><td>${esc(r.title)}<div class="muted" style="font-size:12px">${esc(r.module)}</div></td>
+      <td><span class="pill ${r.status}">${ICON[r.status]} ${r.status}</span></td><td class="num">${r.duration}s</td>
+      <td><button class="row-btn" data-id="${esc(r.id)}">${o?'Ẩn':'Chi tiết'}</button></td></tr>
+      ${o?`<tr class="detail"><td></td><td colspan="4"><dl>
+        <dt>Dữ liệu vào</dt><dd class="mono">${esc(r.input1)}${r.input2?' / '+esc(r.input2):''}</dd>
+        <dt>Kỳ vọng</dt><dd class="mono">${esc(r.expected)}</dd>
+        <dt>Thực tế</dt><dd>${esc(r.actual)||'<span class="muted">–</span>'}</dd>
+        <dt>URL</dt><dd class="mono">${esc(r.url)}</dd>
+        ${r.error?`<dt>Lỗi</dt><dd>${esc(r.error)}</dd>`:''}
+        ${shot?`<dt>Ảnh</dt><dd><a href="${shot}" target="_blank"><img class="shot" src="${shot}" alt="Ảnh chụp ${esc(r.id)}"></a></dd>`:''}
+      </dl></td></tr>`:''}`}).join('');
+  const leg=['PASS','FAIL','ERROR','SKIPPED'].map(k=>`<span><i style="background:var(--${k==='SKIPPED'?'skip':k.toLowerCase()})"></i>${k} ${s[k]}</span>`).join('');
+  $('#resBody').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><b>${total}</b><span>Tổng</span></div>
+      <div class="kpi PASS"><b>${s.PASS}</b><span>PASS</span></div><div class="kpi FAIL"><b>${s.FAIL}</b><span>FAIL</span></div>
+      <div class="kpi ERROR"><b>${s.ERROR}</b><span>ERROR</span></div><div class="kpi SKIPPED"><b>${s.SKIPPED}</b><span>SKIPPED</span></div>
+      <div class="kpi"><b>${s.rate.toFixed(1)}%</b><span>Tỷ lệ PASS</span></div></div>
+    <div style="margin-top:16px">${distBar(s,total)}<div class="legend">${leg}</div></div>
+    <h3 style="font-size:13px;margin:18px 0 6px">Theo module</h3>
+    ${Object.entries(mods).map(([m,c])=>`<div class="mod"><span>${esc(m)}</span>${distBar(c,c.n)}<span class="num muted">${c.PASS}/${c.n-c.SKIPPED}</span></div>`).join('')}
+    <div class="chips" style="padding:14px 0 8px;border:0"><button class="chip" data-f="" aria-pressed="${!flt}">Tất cả</button>
+      ${['PASS','FAIL','ERROR','SKIPPED'].map(k=>`<button class="chip" data-f="${k}" aria-pressed="${flt===k}">${k}</button>`).join('')}</div>
+    <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Mô tả</th><th>Kết quả</th><th>Thời gian</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan=5 class="empty">Chưa có kết quả.</td></tr>'}</tbody></table></div>`;
+  document.querySelectorAll('#resBody .chip').forEach(c=>c.onclick=()=>{FSTAT=c.dataset.f||null;renderResults(st,running)});
+  document.querySelectorAll('.row-btn').forEach(b=>b.onclick=()=>{OPEN.has(b.dataset.id)?OPEN.delete(b.dataset.id):OPEN.add(b.dataset.id);renderResults(st,running)});
+  if(!running&&st.status!=='idle'){const b=`/runs/${st.run_id}/`;
+    $('#dl').innerHTML=`<a href="${b}report.html" target="_blank">Báo cáo HTML</a> · <a href="${b}results.xlsx?dl=1">Excel</a> · <a href="${b}results.csv?dl=1">CSV</a> · <a href="${b}results.json?dl=1">JSON</a> · <a href="${b}all.zip">ZIP</a>`}
+  else $('#dl').textContent='';
+}
+async function loadHist(){
+  const h=await api('/api/history');
+  $('#hist').innerHTML=h.map(r=>{const s=r.summary,b=`/runs/${r.run_id}/`;
+    return `<tr><td class="num">${esc(r.started)}</td><td>${esc(r.file)}</td><td class="num">${s.total}</td><td class="num">${s.pass}</td><td class="num">${s.fail}</td><td class="num">${s.error}</td><td class="num">${s.skipped}</td>
+      <td class="num">${s.pass_rate}%</td><td><a href="${b}report.html" target="_blank">HTML</a> · <a href="${b}results.xlsx?dl=1">Excel</a> · <a href="${b}all.zip">ZIP</a></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">Chưa có lần chạy nào.</td></tr>';
+}
+init();
+</script></body></html>

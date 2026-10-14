@@ -1,0 +1,24 @@
+services:
+  autotest:
+    build: .
+    image: khan-autotest:latest
+    ports:
+      - "8765:8765"   # giao diện
+      - "6080:6080"   # xem trình duyệt trực tiếp (noVNC) khi chọn "Hiện cửa sổ"
+    shm_size: "1gb"            # Firefox cần /dev/shm đủ lớn
+    volumes:
+      - ./data:/data           # báo cáo + ảnh chụp lỗi
+      - ./testcases:/srv/testcases   # sửa/thêm file test case ngay trên máy
+    environment:
+      VNC_PASSWORD: "${VNC_PASSWORD:-}"   # đặt mật khẩu nếu mở máy chủ ra mạng
+      AUTH_USER: "${AUTH_USER:-}"         # Basic Auth cho giao diện (bắt buộc khi public)
+      AUTH_PASS: "${AUTH_PASS:-}"
+    restart: unless-stopped
+
+  # Public bằng Cloudflare quick tunnel: chỉ đưa giao diện (8765) ra ngoài, KHÔNG đưa noVNC (6080).
+  # Xem URL:  docker compose logs tunnel | grep trycloudflare
+  tunnel:
+    image: cloudflare/cloudflared:2024.12.2
+    command: tunnel --no-autoupdate --url http://autotest:8765
+    depends_on: [autotest]
+    restart: unless-stopped

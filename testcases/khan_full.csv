@@ -1,0 +1,84 @@
+﻿id,module,title,type,priority,scenario,input1,input2,expected_mode,expected,note,enabled
+LG01,Đăng nhập,Hiển thị ô email/tên đăng nhập,UI,High,open_page,/login,,element_visible,#username-field,,1
+LG02,Đăng nhập,Hiển thị ô mật khẩu (ẩn ký tự),UI,High,open_page,/login,,element_visible,input[type=password],,1
+LG03,Đăng nhập,Hiển thị nút Đăng nhập,UI,High,open_page,/login,,element_visible,[data-testid=log-in-submit-button],,1
+LG04,Đăng nhập,Có nút đăng nhập bằng Google,UI,Low,open_page,/login,,text_contains,Tiếp tục bằng Google,,1
+LG05,Đăng nhập,Có liên kết Quên mật khẩu,UI,Low,open_page,/login,,text_contains,Quên mật khẩu,,1
+LG06,Đăng nhập,Có liên kết Đăng ký tài khoản,UI,Low,open_page,/login,,text_contains,Đăng ký,,1
+LG07,Đăng nhập,Tiêu đề tab chứa Khan Academy,UI,Low,open_page,/login,,title_contains,Khan Academy,,1
+LG08,Đăng nhập,"Email không tồn tại, mật khẩu hợp lệ (8 ký tự)",Negative,High,login,autotest.user.9271@example.com,Abcd@1234,text_contains,không đúng|incorrect|không hợp lệ|invalid,Báo lỗi sai thông tin,1
+LG09,Đăng nhập,"Email không tồn tại, mật khẩu 12 ký tự",Boundary,Medium,login,autotest.user.9271@example.com,Abcd@1234567,text_contains,không đúng|incorrect|không hợp lệ|invalid,Biên trên độ dài mật khẩu,1
+LG10,Đăng nhập,Để trống cả email và mật khẩu,Negative,High,login,,,url_contains,/login,Ở lại trang login,1
+LG11,Đăng nhập,Để trống mật khẩu,Negative,High,login,autotest.user.9271@example.com,,url_contains,/login,,1
+LG12,Đăng nhập,Để trống email,Negative,High,login,,Abcd@1234,url_contains,/login,,1
+LG13,Đăng nhập,Email thiếu ký tự @,Negative,Medium,login,autotest.user.9271example.com,Abcd@1234,url_contains,/login,,1
+LG14,Đăng nhập,Email thiếu phần tên miền (@gmail.com),Negative,Medium,login,autotest.user.9271,Abcd@1234,url_contains,/login,,1
+LG15,Đăng nhập,Email có dấu cách trước @,Negative,Medium,login,autotest.user.9271 @example.com,Abcd@1234,url_contains,/login,,1
+LG16,Đăng nhập,Email có dấu cách sau @,Negative,Medium,login,autotest.user.9271@ example.com,Abcd@1234,url_contains,/login,,1
+LG17,Đăng nhập,Email viết hoa toàn bộ (không tồn tại),Equivalence,Low,login,AUTOTEST.USER.9271@EXAMPLE.COM,Abcd@1234,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG18,Đăng nhập,Tên đăng nhập không có @,Equivalence,Low,login,autotest_user_9271,Abcd@1234,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG19,Đăng nhập,Mật khẩu 7 ký tự (dưới biên 8),Boundary,Medium,login,autotest.user.9271@example.com,Ab@1234,url_contains,/login,,1
+LG20,Đăng nhập,Mật khẩu 13 ký tự (trên biên 12),Boundary,Medium,login,autotest.user.9271@example.com,Abcd@12345678,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG21,Đăng nhập,Mật khẩu chỉ gồm chữ cái,Equivalence,Low,login,autotest.user.9271@example.com,abcdefgh,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG22,Đăng nhập,Mật khẩu chỉ gồm số,Equivalence,Low,login,autotest.user.9271@example.com,12345678,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG23,Đăng nhập,Mật khẩu chỉ gồm ký tự đặc biệt,Equivalence,Low,login,autotest.user.9271@example.com,!@#$%^&*,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG24,Đăng nhập,Mật khẩu chứa dấu cách,Negative,Low,login,autotest.user.9271@example.com,Abcd 1234,text_contains,không đúng|incorrect|không hợp lệ|invalid,,1
+LG25,Đăng nhập,Email rất dài (250 ký tự),Boundary,Low,login,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com,Abcd@1234,url_contains,/login,,1
+LG26,Đăng nhập,Gửi form bằng phím Enter (sai thông tin),Functional,Medium,login_enter,autotest.user.9271@example.com,Abcd@1234,text_contains,không đúng|incorrect|không hợp lệ|invalid,Enter hoạt động như nút,1
+LG27,Đăng nhập,Chuỗi SQL Injection ở ô email,Security,High,login,' OR '1'='1,Abcd@1234,url_contains,/login,Không được đăng nhập,1
+LG28,Đăng nhập,Chuỗi SQL Injection ở ô mật khẩu,Security,High,login,autotest.user.9271@example.com,' OR '1'='1' --,url_contains,/login,Không được đăng nhập,1
+LG29,Đăng nhập,Chuỗi XSS ở ô email không bị thực thi,Security,High,login,<script>alert(1)</script>,Abcd@1234,url_contains,/login,,1
+LG30,Đăng nhập,Đăng nhập đúng tài khoản hợp lệ,Functional,High,login,{EMAIL},{PASSWORD},url_not_contains,/login,Cần tài khoản thật,1
+LG31,Đăng nhập,"Sau đăng nhập đúng, không lộ mật khẩu trên URL",Security,High,login,{EMAIL},{PASSWORD},url_not_contains,password,Cần tài khoản thật,1
+SR01,Tìm kiếm,Có ô tìm kiếm trên trang tìm kiếm,UI,High,open_page,/search,,element_visible,[data-testid=page-search-box],,1
+SR02,Tìm kiếm,Từ khóa tiếng Anh hợp lệ: algebra,Functional,High,search,algebra,,results_min,1,,1
+SR03,Tìm kiếm,Từ khóa tiếng Việt có dấu: toán,Functional,High,search,toán,,results_min,1,,1
+SR04,Tìm kiếm,Từ khóa tiếng Việt: hình học,Functional,Medium,search,hình học,,results_min,1,,1
+SR05,Tìm kiếm,Từ khóa không dấu: toan,Equivalence,Medium,search,toan,,results_min,1,,1
+SR06,Tìm kiếm,Từ khóa viết hoa: ALGEBRA,Equivalence,Medium,search,ALGEBRA,,results_min,1,,1
+SR07,Tìm kiếm,Từ khóa nhiều từ: linear equations,Functional,Medium,search,linear equations,,results_min,1,,1
+SR08,Tìm kiếm,Từ khóa theo môn: biology,Functional,Medium,search,biology,,results_min,1,,1
+SR09,Tìm kiếm,Từ khóa theo kiểu nội dung: video,Functional,Low,search,video,,results_min,1,,1
+SR10,Tìm kiếm,Từ khóa 1 chữ cái,Boundary,Medium,search,a,,text_contains,Tất cả kết quả,,1
+SR11,Tìm kiếm,Từ khóa là số: 2024,Equivalence,Medium,search,2024,,text_contains,Tất cả kết quả,,1
+SR12,Tìm kiếm,Từ khóa số 0,Boundary,Low,search,0,,text_contains,Tất cả kết quả,,1
+SR13,Tìm kiếm,Từ khóa số âm: -1,Boundary,Low,search,-1,,text_contains,Tất cả kết quả,,1
+SR14,Tìm kiếm,Từ khóa ký tự đặc biệt: @#$%,Equivalence,Medium,search,@#$%,,text_contains,Tất cả kết quả,,1
+SR15,Tìm kiếm,Từ khóa có dấu nháy kép,Equivalence,Low,search,"""algebra""",,text_contains,Tất cả kết quả,,1
+SR16,Tìm kiếm,Từ khóa có emoji,Equivalence,Low,search,📚,,text_contains,Tất cả kết quả,,1
+SR17,Tìm kiếm,Từ khóa không tồn tại,Negative,High,search,zzqqxxwwvv9,,text_contains,không khớp|did not match,Báo không có kết quả,1
+SR18,Tìm kiếm,Từ khóa dài 100 ký tự,Boundary,Low,search,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,,text_contains,không khớp|did not match|Tất cả kết quả,,1
+SR19,Tìm kiếm,Từ khóa dài 200 ký tự,Boundary,Low,search,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,,text_contains,không khớp|did not match|Tất cả kết quả,,1
+SR20,Tìm kiếm,Từ khóa có dấu cách đầu/cuối,Equivalence,Low,search,  algebra  ,,results_min,1,,1
+SR21,Tìm kiếm,Từ khóa chỉ gồm dấu cách,Negative,Low,search,     ,,url_contains,/search,,1
+SR22,Tìm kiếm,Không nhập từ khóa,Negative,Medium,search,,,url_contains,/search,,1
+SR23,Tìm kiếm,"Chuỗi SQL Injection bị chặn, không lộ lỗi CSDL",Security,High,search,' OR 1=1 --,,text_not_contains,SQL syntax|Traceback|Internal Server Error|stack trace,"Site trả HTTP 406 (WAF), trang rỗng",1
+SR24,Tìm kiếm,"Chuỗi XSS bị chặn, không phản chiếu ra trang",Security,High,search,<script>alert(1)</script>,,text_not_contains,<script>alert|Traceback|Internal Server Error,"Site trả HTTP 406 (WAF), trang rỗng",1
+NV01,Điều hướng,Trang chủ tải được,Functional,High,open_page,/,,title_contains,Khan Academy,,1
+NV02,Điều hướng,Trang chủ có nút Đăng nhập,UI,High,open_page,/,,element_visible,a[href*='/login'],,1
+NV03,Điều hướng,Bấm Đăng nhập ở header chuyển sang /login,Functional,High,click,/,a[href*='/login'],url_contains,/login,,1
+NV04,Điều hướng,Có nút Khám phá (menu môn học),UI,Medium,open_page,/,,element_visible,[data-testid=learn-menu-dropdown],,1
+NV05,Điều hướng,Có nút Tìm kiếm trên header,UI,Medium,open_page,/,,element_visible,[data-testid=navbar-search-button],,1
+NV06,Điều hướng,Bấm nút Tìm kiếm mở trang/ô tìm kiếm,Functional,Medium,click,/,[data-testid=navbar-search-button],element_visible,"[data-testid=page-search-box], input[type=search]",,1
+NV07,Điều hướng,Có liên kết Quyên góp,UI,Low,open_page,/,,element_visible,[data-testid=header-donate-link],,1
+NV08,Điều hướng,Trang Toán học,Functional,Medium,open_page,/math,,url_contains,/math,,1
+NV09,Điều hướng,Trang Khoa học,Functional,Medium,open_page,/science,,url_contains,/science,,1
+NV10,Điều hướng,Trang Máy tính/Lập trình,Functional,Medium,open_page,/computing,,url_contains,/computing,,1
+NV11,Điều hướng,Trang Kinh tế - Tài chính,Functional,Low,open_page,/economics-finance-domain,,url_contains,/economics-finance-domain,,1
+NV12,Điều hướng,Trang Luyện thi,Functional,Low,open_page,/test-prep,,url_contains,/test-prep,,1
+NV13,Điều hướng,Trang Giới thiệu (About),Functional,Low,open_page,/about/our-mission,,text_contains,Khan Academy,,1
+NV14,Điều hướng,Trang đăng ký tải được,Functional,Medium,open_page,/signup,,url_contains,/signup|/login,,1
+NV15,Điều hướng,Trang quên mật khẩu tải được,Functional,Low,open_page,/forgot-password,,url_contains,/forgot|/login,,1
+NV16,Điều hướng,URL không tồn tại hiển thị trang 404,Negative,Medium,open_page,/trang-khong-ton-tai-autotest,,text_contains,không tồn tại|not found|404,,1
+NV17,Điều hướng,Trang 404 có liên kết về trang chủ,Negative,Low,open_page,/trang-khong-ton-tai-autotest,,text_contains,trang chủ|home,,1
+CR01,Khóa học / Tiến độ,Mở trang Khóa học của tôi,Functional,High,login_then_open,/profile/me/courses,,url_contains,/profile/me/courses,Cần tài khoản; chỉ đọc,1
+CR02,Khóa học / Tiến độ,Trang Khóa học có nút chỉnh sửa,UI,Medium,login_then_open,/profile/me/courses,,text_contains,Edit courses|Chỉnh sửa khóa học|Chỉnh sửa,Cần tài khoản; chỉ đọc,1
+CR03,Khóa học / Tiến độ,Mở trang Tiến độ học tập,Functional,High,login_then_open,/profile/me/progress,,url_contains,/profile/me/progress,Cần tài khoản; chỉ đọc,1
+CR04,Khóa học / Tiến độ,Mở trang Hồ sơ cá nhân,Functional,Medium,login_then_open,/profile/me,,url_contains,/profile/,Cần tài khoản; chỉ đọc,1
+CR05,Khóa học / Tiến độ,Mở trang Cài đặt tài khoản,Functional,Medium,login_then_open,/settings,,url_contains,/settings,Cần tài khoản; chỉ đọc,1
+CR06,Khóa học / Tiến độ,Trang chủ sau đăng nhập không còn nút Đăng nhập,Functional,Medium,login_then_open,/,,text_not_contains,Quên mật khẩu,Cần tài khoản; chỉ đọc,1
+SC01,Bảo mật & kỹ thuật,HTTP tự chuyển sang HTTPS,Security,High,open_page,http://vi.khanacademy.org/login,,url_contains,https://,,1
+SC02,Bảo mật & kỹ thuật,Ô mật khẩu có type=password,Security,High,open_page,/login,,element_visible,input[type=password],,1
+SC03,Bảo mật & kỹ thuật,Trang đăng nhập dùng HTTPS,Security,High,open_page,/login,,url_contains,https://,,1
+SC04,Bảo mật & kỹ thuật,Có tệp robots.txt,Functional,Low,open_page,/robots.txt,,text_contains,User-agent,,1
+SC05,Bảo mật & kỹ thuật,Sai thông tin không đưa mật khẩu lên URL,Security,High,login,autotest.user.9271@example.com,Abcd@1234,url_not_contains,Abcd,,1
