@@ -1,6 +1,6 @@
 """BaseTest dạng pytest: vòng đời trình duyệt, tài khoản, nghỉ giữa test, ảnh chụp khi lỗi.
 
-Biến môi trường: KHAN_BASE_URL, KHAN_EMAIL, KHAN_PASSWORD, KHAN_HEADLESS(=1), KHAN_DELAY(=2), KHAN_PATH(file test case).
+Biến môi trường: KHAN_BASE_URL, KHAN_EMAIL, KHAN_PASSWORD, KHAN_HEADLESS(=1), KHAN_DELAY(=2), KHAN_TESTCASES(file test case).
 Test file chỉ chứa assertion; hành động nằm ở app/pages/ (qua Runner.perform).
 """
 import os

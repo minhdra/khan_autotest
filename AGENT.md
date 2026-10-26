@@ -11,6 +11,7 @@ Ngôn ngữ giao diện/chú thích/tài liệu: **tiếng Việt**. App chạy 
 - `tests/` — pytest: `conftest.py` (BaseTest) + `test_<module>.py` chỉ chứa assertion, parametrize từ `testcases/khan_full.csv`.
 - `testcases/*.csv|xlsx` — dữ liệu test; `tools/gen_testcases.py` sinh `khan_full.*`.
 - Chạy bằng terminal: [docs/RUN_TERMINAL.md](docs/RUN_TERMINAL.md).
+- Phương pháp test: [docs/METHODOLOGY.md](docs/METHODOLOGY.md). Bộ `khan_full.*` sinh từ `tools/gen_testcases.py` — sửa script, đừng sửa tay.
 - Chi tiết: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), cách dùng: [docs/USAGE.md](docs/USAGE.md), cài đặt: [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Quy tắc khi sửa

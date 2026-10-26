@@ -96,11 +96,44 @@ phương án OR.
 `GET /api/status` (`status`, `done/total`, `results[]`) → xong thì `report.write_all` → `GET /runs/<id>/<file>`.
 Chỉ một phiên chạy tại một thời điểm (vì dùng chung một Firefox và để không dồn tải lên site).
 
+## Tham chiếu API (GUI)
+Mọi route đều đi sau Basic Auth (nếu có). Server: `app/web/server.py`.
+
+| Method + đường dẫn | Chức năng |
+|---|---|
+| `GET /` , `/theme.css` | giao diện (`web/static/`) |
+| `GET /api/files` | danh sách file test case, `DEFAULTS`, `SCENARIOS`, `MODES`, cổng VNC |
+| `GET /api/testcases?file=` | nạp + `validate` một file → `{testcases, errors}` |
+| `POST /api/run` | `{file, ids[], settings{}}` → `{run_id}`; 400 nếu đang có phiên khác |
+| `GET /api/status` | trạng thái phiên: `idle/running/finished/stopped/error`, `done/total`, `results[]` |
+| `POST /api/stop` | dừng sau test case hiện tại |
+| `POST /api/upload?name=` | tải file `.csv/.xlsx/.json` vào `testcases/` (kiểm tra tên + đọc thử) |
+| `GET /api/history` | các phiên đã chạy (đọc `results.json` của từng thư mục) |
+| `GET /api/template` | file mẫu `khan_full.xlsx` |
+| `GET /runs/<id>/<file>` , `/runs/<id>/all.zip` | báo cáo, ảnh chụp, zip cả phiên |
+| `GET /vnc/*` | proxy noVNC (HTTP + WebSocket) |
+
+Biến môi trường server: `HOST` (mặc định `127.0.0.1`), `PORT` (8765), `AUTH_USER`/`AUTH_PASS`, `VNC_PORT`,
+`AUTOTEST_DATA`, `AUTOTEST_TESTCASES` (đổi thư mục dữ liệu / test case).
+
+## Định dạng báo cáo
+Mỗi phiên ghi vào `data/runs/<YYYYMMDD_HHMMSS>/`:
+`report.html`, `results.xlsx` (sheet *Tổng quan* + *Kết quả chi tiết*), `results.csv`, `results.json`, `screenshots/<ID>.png`
+(chỉ có cho FAIL/ERROR).
+
+`results.json` = `{meta, summary, results[]}`:
+- `meta`: `run_id, started, file, base_url, browser`.
+- `summary`: `total, executed, pass, fail, error, skipped, pass_rate, duration, by_module{module: {PASS,FAIL,…,total}}`.
+- `results[]`: `id, module, title, type, priority, scenario, input1, input2, expected ("mode: giá trị"), status,
+  actual (300 ký tự đầu của <main>), url, error, trace (khi ERROR), duration, attempts, screenshot, started`.
+
 ## Bảo mật
 - Basic Auth (`hmac.compare_digest`) áp dụng cho mọi route, gồm `/runs/*` và `/vnc/*`. Không đặt → mở tự do (chỉ nội bộ).
 - `/runs/` chống path traversal (`resolve()` + kiểm tra nằm trong `RUNS_DIR`); tên file upload qua regex `SAFE`.
 - Public qua Cloudflare quick tunnel chỉ phơi cổng 8765; noVNC được proxy qua `/vnc/` (HTTP + WebSocket raw pipe)
   nên dùng chung auth thay vì mở cổng 6080.
+
+Phương pháp thiết kế test case, phân loại kết quả, chống flaky: xem [METHODOLOGY.md](METHODOLOGY.md).
 
 ## Hạn chế đã biết
 - Google CSE (tìm kiếm) có thể hiện reCAPTCHA khi chạy dày → test `search`/`results_min` FAIL giả; tăng `delay`.
